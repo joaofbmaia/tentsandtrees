@@ -1,4 +1,4 @@
-# tents-and-trees-validator
+# tentsandtrees
 
 ## C style and coding rules
 - Do not use tabs, **use spaces** instead
