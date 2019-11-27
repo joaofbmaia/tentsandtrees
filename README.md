@@ -18,4 +18,5 @@
 - SpaceAfterCStyleCast: true
 - DerivePointerAlignment: false
 - PointerAlignment: Right
-- If using VS Code change *C_Cpp.clang_format_fallbackStyle* setting to `{BasedOnStyle: Google, IndentWidth: 4, ColumnLimit: 0, SpaceAfterCStyleCast: true, DerivePointerAlignment: false, PointerAlignment: Right}`
+- IncludeBlocks: Merge
+- If using VS Code change *C_Cpp.clang_format_fallbackStyle* setting to `{BasedOnStyle: Google, IndentWidth: 4, ColumnLimit: 0, SpaceAfterCStyleCast: true, DerivePointerAlignment: false, PointerAlignment: Right, IncludeBlocks: Merge}`
