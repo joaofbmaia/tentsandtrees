@@ -17,7 +17,7 @@
  * 
  * Arguments:
  *     FILE *fp - file pointer
- *     map *mptr - map pointer
+ *     map **mptr - map pointer
  *     int *lines - returns number of lines
  *     int *columns - returns number of columns
  *     int *result - returns result
@@ -26,7 +26,7 @@
  *     1 - if map was read
  *     0 - if EOF
  */
-int readAndSolveMap(FILE *fp, map *mptr, int *lines, int *columns, int *result);
+int readAndSolveMap(FILE *fp, map **mptr, int *lines, int *columns, int *result);
 
 
 /**

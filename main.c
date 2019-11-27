@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
     if (fpOut == NULL) return EXIT_FAILURE;
 
 
-    while (readAndSolveMap(fpIn, currentMap, &lines, &columns, &result)) {
+    while (readAndSolveMap(fpIn, &currentMap, &lines, &columns, &result)) {
         writeSolution(fpOut, currentMap, lines, columns, result);
     }
 
