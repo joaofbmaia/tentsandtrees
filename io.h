@@ -28,7 +28,6 @@
  */
 int readAndSolveMap(FILE *fp, map **mptr, int *lines, int *columns, int *result);
 
-
 /**
  * Function: readAndSolveMap
  * 

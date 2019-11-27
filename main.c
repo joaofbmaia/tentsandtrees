@@ -11,11 +11,11 @@
  * 
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
-#include "map.h"
 #include "io.h"
+#include "map.h"
 
 int main(int argc, char *argv[]) {
     char *resultFilename;
@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
     if (strcmp(strrchr(argv[1], '.'), ".camp")) return 0;
 
     resultFilename = (char *) malloc((strlen(argv[1]) + 2) * sizeof(char));
-    if(resultFilename == NULL) return EXIT_FAILURE;
+    if (resultFilename == NULL) return EXIT_FAILURE;
 
     strcpy(resultFilename, argv[1]);
     *(strrchr(resultFilename, '.')) = '\0';
@@ -38,7 +38,6 @@ int main(int argc, char *argv[]) {
 
     fpOut = fopen(resultFilename, "w");
     if (fpOut == NULL) return EXIT_FAILURE;
-
 
     while (readAndSolveMap(fpIn, &currentMap, &lines, &columns, &result)) {
         writeSolution(fpOut, currentMap, lines, columns, result);
