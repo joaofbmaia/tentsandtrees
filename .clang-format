@@ -6,3 +6,5 @@ SpaceAfterCStyleCast: true
 
 DerivePointerAlignment: false
 PointerAlignment: Right
+
+IncludeBlocks: Merge
