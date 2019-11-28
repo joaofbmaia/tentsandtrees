@@ -16,8 +16,8 @@ int solveMap(map *mptr) {
 }
 
 int markUncertainCels(map *mptr) {
-    for (int i; i < getMapLines; i++) {
-        for (int j = 0; j < getMapColumns; j++) {
+    for (int i = 0; i < getMapLines(mptr); i++) {
+        for (int j = 0; j < getMapColumns(mptr); j++) {
             if (getContentOfPosition(mptr, i, j) == 'A') {
                 if (checkandMarkOrtogonals(mptr, i, j) == -1) {
                     return -1;
