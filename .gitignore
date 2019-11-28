@@ -5,4 +5,5 @@
 !*.h
 !*.md
 !.gitignore
+!.clang-format
 !Makefile
