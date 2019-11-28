@@ -6,40 +6,27 @@ struct {
 } ortogonals[] = {{-1, 0}, {0, -1}, {0, 1}, {1, 0}};
 
 int markUncertainCels(map *mptr);
-int checkandMarkOrtogonals(map *mptr, int line, int column);
+int checkAndMarkOrtogonals(map *mptr, int line, int column);
 
 int solveMap(map *mptr) {
-    if (markUncertainCels(mptr) == -1) {
-        return -1;
-    }
+    markUncertainCels(mptr);
     return 1;
 }
 
-int markUncertainCels(map *mptr) {
+void markUncertainCels(map *mptr) {
     for (int i = 0; i < getMapLines(mptr); i++) {
         for (int j = 0; j < getMapColumns(mptr); j++) {
             if (getContentOfPosition(mptr, i, j) == 'A') {
-                if (checkandMarkOrtogonals(mptr, i, j) == -1) {
-                    return -1;
-                } else
-                    continue;
+                checkAndMarkOrtogonals(mptr, i, j);
             }
         }
     }
-    return 1;
 }
 
-int checkandMarkOrtogonals(map *mptr, int line, int column) {
-    int gangBang = 0;
-    for (int i; i < 4; i++) {
+void checkAndMarkOrtogonals(map *mptr, int line, int column) {
+    for (int i = 0; i < 4; i++) {
         if ((getContentOfPosition(mptr, line + ortogonals[i].dx, column + ortogonals[i].dy) != 'A') && getTentsInLine(mptr, line) && getTentsInColumn(mptr, column)) {
             setContentOfPosition(mptr, line + ortogonals[i].dx, column + ortogonals[i].dy, 'U');
-            gangBang++;
         }
     }
-
-    if (gangBang == 0) {
-        return -1;
-    } else
-        return 1;
 }
