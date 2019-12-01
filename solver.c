@@ -69,7 +69,7 @@ int markUncertainCels(map *mptr) {
                 isolatedTree = 1;
                 for (int k = 0; k < 4; k++) {
                     if (i + ortogonals[k].dx < 0 || i + ortogonals[k].dx >= getMapLines(mptr)) continue;
-                    if (j + ortogonals[k].dy < 0 || j + ortogonals[k].dy >= getMapLines(mptr)) continue;
+                    if (j + ortogonals[k].dy < 0 || j + ortogonals[k].dy >= getMapColumns(mptr)) continue;
                     if (((c = getContentOfPosition(mptr, i + ortogonals[k].dx, j + ortogonals[k].dy)) != 'A') && getTentsInLine(mptr, i + ortogonals[k].dx) && getTentsInColumn(mptr, j + ortogonals[k].dy)) {
                         if (c != 'U') {
                             setContentOfPosition(mptr, i + ortogonals[k].dx, j + ortogonals[k].dy, 'U');
@@ -82,7 +82,7 @@ int markUncertainCels(map *mptr) {
             }
         }
     }
-    if (getUncertainCount(mptr) < getTreesNumber(mptr)) return 0;
+    if (getUncertainCount(mptr) < getTreesNumber(mptr) && getTreesNumber(mptr) == getTentsNumber(mptr)) return 0;
     return 1;
 }
 
