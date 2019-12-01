@@ -14,7 +14,6 @@ struct {
 typedef struct {
     int line;
     int column;
-    char *content;
 } cell;
 
 void countNumberOfTrees(map *mptr);
@@ -99,7 +98,6 @@ cell *buildUncertainArray(map *mptr) {
             if (getContentOfPosition(mptr, i, j) == 'U') {
                 array[c].line = i;
                 array[c].column = j;
-                array[c].content = getPosition(mptr, i, j);
                 c++;
             }
         }

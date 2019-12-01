@@ -94,22 +94,6 @@ void setContentOfPosition(map *mptr, int line, int column, char val);
 char getContentOfPosition(map *mptr, int line, int column);
 
 /**
- * Function: getPosition
- * 
- * Description: gets position from map
- * 
- * Arguments:
- *     map *mptr - pointer to map
- *     int line - line of coordinate
- *     int column - column of coordinate
- * 
- * Return value:
- *     pointer to content of position with specified coordinates of map
- *     NULL if outside map
- */
-char *getPosition(map *mptr, int line, int column);
-
-/**
  * Function: setMapLine
  * 
  * Description: sets content of entire line as a string
@@ -266,42 +250,5 @@ void incrementUncertainCount(map *mptr);
  * Return value: none
  */
 void decrementUncertainCount(map *mptr);
-
-/**
- * Function: getAssignedTentsCount
- * 
- * Description: gets assigned tents count
- * 
- * Arguments:
- *     map *mptr - pointer to map
- * 
- * Return value:
- *     assigned tents count
- */
-int getAssignedTentsCount(map *mptr);
-
-/**
- * Function: incrementAssignedTentsCount
- * 
- * Description: increments assigned tents count
- * 
- * Arguments:
- *     map *mptr - pointer to map
- * 
- * Return value: none
- */
-void incrementAssignedTentsCount(map *mptr);
-
-/**
- * Function: decrementAssignedTentsCount
- * 
- * Description: decrements assigned tents count
- * 
- * Arguments:
- *     map *mptr - pointer to map
- * 
- * Return value: none
- */
-void decrementAssignedTentsCount(map *mptr);
 
 #endif
