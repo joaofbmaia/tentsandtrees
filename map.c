@@ -16,6 +16,8 @@ struct mapStruct {
     int *tentsInColumn;
     int tentsNumber;
     int treesNumber;
+    int uncertainCount;
+    int assignedTentsCount;
 };
 
 /**
@@ -41,6 +43,8 @@ map *newMap(int lines, int columns) {
 
     mptr->lines = lines;
     mptr->columns = columns;
+    mptr->uncertainCount = 0;
+    mptr->assignedTentsCount = 0;
 
     mptr->map = (char **) malloc(lines * sizeof(char *));
     if (mptr->map == NULL) return NULL;
@@ -147,6 +151,27 @@ char getContentOfPosition(map *mptr, int line, int column) {
     if (line >= mptr->lines || column >= mptr->columns) return '\0';
     if (line < 0 || column < 0) return '\0';
     return mptr->map[line][column];
+}
+
+
+/**
+ * Function: getPosition
+ * 
+ * Description: gets position from map
+ * 
+ * Arguments:
+ *     map *mptr - pointer to map
+ *     int line - line of coordinate
+ *     int column - column of coordinate
+ * 
+ * Return value:
+ *     pointer to content of position with specified coordinates of map
+ *     NULL if outside map
+ */
+char *getPosition(map *mptr, int line, int column) {
+    if (line >= mptr->lines || column >= mptr->columns) return NULL;
+    if (line < 0 || column < 0) return NULL;
+    return &mptr->map[line][column];
 }
 
 /**
@@ -281,10 +306,96 @@ int getTreesNumber(map *mptr) {
  * 
  * Arguments:
  *     map *mptr - pointer to map
- *     int treesNumber - number of existing trees
+ *     int treesNumber - number of trees
  * 
  * Return value: none
  */
 void setTreesNumber(map *mptr, int treesNumber) {
     mptr->treesNumber = treesNumber;
+}
+
+/**
+ * Function: getUncertainCount
+ * 
+ * Description: gets uncertain count
+ * 
+ * Arguments:
+ *     map *mptr - pointer to map
+ * 
+ * Return value:
+ *     uncertain count
+ */
+int getUncertainCount(map *mptr) {
+    return mptr->uncertainCount;
+}
+
+/**
+ * Function: incrementUncertainCount
+ * 
+ * Description: increments uncertain count
+ * 
+ * Arguments:
+ *     map *mptr - pointer to map
+ * 
+ * Return value: none
+ */
+void incrementUncertainCount(map *mptr) {
+    mptr->uncertainCount++;
+}
+
+/**
+ * Function: decrementUncertainCount
+ * 
+ * Description: decrements uncertain count
+ * 
+ * Arguments:
+ *     map *mptr - pointer to map
+ * 
+ * Return value: none
+ */
+void decrementUncertainCount(map *mptr) {
+    mptr->uncertainCount--;
+}
+
+/**
+ * Function: getAssignedTentsCount
+ * 
+ * Description: gets assigned tents count
+ * 
+ * Arguments:
+ *     map *mptr - pointer to map
+ * 
+ * Return value:
+ *     assigned tents count
+ */
+int getAssignedTentsCount(map *mptr) {
+    return mptr->assignedTentsCount;
+}
+
+/**
+ * Function: incrementAssignedTentsCount
+ * 
+ * Description: increments assigned tents count
+ * 
+ * Arguments:
+ *     map *mptr - pointer to map
+ * 
+ * Return value: none
+ */
+void incrementAssignedTentsCount(map *mptr) {
+    mptr->assignedTentsCount++;
+}
+
+/**
+ * Function: decrementAssignedTentsCount
+ * 
+ * Description: decrements assigned tents count
+ * 
+ * Arguments:
+ *     map *mptr - pointer to map
+ * 
+ * Return value: none
+ */
+void decrementAssignedTentsCount(map *mptr) {
+    mptr->assignedTentsCount--;
 }
