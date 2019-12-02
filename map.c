@@ -16,6 +16,7 @@ struct mapStruct {
     int *tentsInColumn;
     int tentsNumber;
     int treesNumber;
+    int uncertainCount;
 };
 
 /**
@@ -41,6 +42,7 @@ map *newMap(int lines, int columns) {
 
     mptr->lines = lines;
     mptr->columns = columns;
+    mptr->uncertainCount = 0;
 
     mptr->map = (char **) malloc(lines * sizeof(char *));
     if (mptr->map == NULL) return NULL;
@@ -281,10 +283,53 @@ int getTreesNumber(map *mptr) {
  * 
  * Arguments:
  *     map *mptr - pointer to map
- *     int treesNumber - number of existing trees
+ *     int treesNumber - number of trees
  * 
  * Return value: none
  */
 void setTreesNumber(map *mptr, int treesNumber) {
     mptr->treesNumber = treesNumber;
+}
+
+/**
+ * Function: getUncertainCount
+ * 
+ * Description: gets uncertain count
+ * 
+ * Arguments:
+ *     map *mptr - pointer to map
+ * 
+ * Return value:
+ *     uncertain count
+ */
+int getUncertainCount(map *mptr) {
+    return mptr->uncertainCount;
+}
+
+/**
+ * Function: incrementUncertainCount
+ * 
+ * Description: increments uncertain count
+ * 
+ * Arguments:
+ *     map *mptr - pointer to map
+ * 
+ * Return value: none
+ */
+void incrementUncertainCount(map *mptr) {
+    mptr->uncertainCount++;
+}
+
+/**
+ * Function: decrementUncertainCount
+ * 
+ * Description: decrements uncertain count
+ * 
+ * Arguments:
+ *     map *mptr - pointer to map
+ * 
+ * Return value: none
+ */
+void decrementUncertainCount(map *mptr) {
+    mptr->uncertainCount--;
 }

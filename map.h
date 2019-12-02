@@ -208,10 +208,47 @@ int getTreesNumber(map *mptr);
  * 
  * Arguments:
  *     map *mptr - pointer to map
- *     int treesNumber - number of existing trees
+ *     int treesNumber - number of trees
  * 
  * Return value: none
  */
 void setTreesNumber(map *mptr, int treesNumber);
+
+/**
+ * Function: getUncertainCount
+ * 
+ * Description: gets uncertain count
+ * 
+ * Arguments:
+ *     map *mptr - pointer to map
+ * 
+ * Return value:
+ *     uncertain count
+ */
+int getUncertainCount(map *mptr);
+
+/**
+ * Function: incrementUncertainCount
+ * 
+ * Description: increments uncertain count
+ * 
+ * Arguments:
+ *     map *mptr - pointer to map
+ * 
+ * Return value: none
+ */
+void incrementUncertainCount(map *mptr);
+
+/**
+ * Function: decrementUncertainCount
+ * 
+ * Description: decrements uncertain count
+ * 
+ * Arguments:
+ *     map *mptr - pointer to map
+ * 
+ * Return value: none
+ */
+void decrementUncertainCount(map *mptr);
 
 #endif
