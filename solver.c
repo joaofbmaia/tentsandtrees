@@ -1,3 +1,9 @@
+/**
+ * Filename: solver.c
+ * 
+ * Description: Solver for tents and trees games
+ */
+
 #include <stdlib.h>
 #include <string.h>
 #include "map.h"
@@ -18,7 +24,7 @@ typedef struct {
 } cell;
 
 void countNumberOfTrees(map *mptr);
-int markUncertainCels(map *mptr);
+int markUncertainCells(map *mptr);
 void buildUncertainAndTreeArray(map *mptr, cell **uncertainArray, cell **treeArray);
 int checkHintsConsistency(map *mptr);
 int backtrackingSolve(map *mptr, cell *uncertainArray, cell *treeArray, cell *links, char *visited, int current);
@@ -26,6 +32,20 @@ int validTent(map *mptr, cell Cell, cell *treeArray, cell *links, char *visited)
 int validGrass(map *mptr, cell Cell);
 int localInjectivity(map *mptr, cell tent, cell *treeArray, cell *links, char *visited);
 
+/**
+ * Function: solveMap
+ * 
+ * Description: solves tents and trees map
+ * 
+ * Side-effects: writes solution for mptr
+ * 
+ * Arguments:
+ *     map *mptr - map pointer
+ * 
+ * Return value:
+ *     1 - if map has solution
+ *     -1 - if map is impossible
+ */
 int solveMap(map *mptr) {
     int possible;
     cell *uncertainArray = NULL;
@@ -36,7 +56,7 @@ int solveMap(map *mptr) {
     countNumberOfTrees(mptr);
     if (getTreesNumber(mptr) < getTentsNumber(mptr)) return -1;
 
-    possible = markUncertainCels(mptr);
+    possible = markUncertainCells(mptr);
     if (!possible) return -1;
 
     buildUncertainAndTreeArray(mptr, &uncertainArray, &treeArray);
@@ -68,6 +88,18 @@ int solveMap(map *mptr) {
     return 1;
 }
 
+/**
+ * Function: countNumberOfTrees
+ * 
+ * Description: counts number of trees inside map
+ * 
+ * Side-effects: writes number of trees in mptr
+ * 
+ * Arguments:
+ *     map *mptr - map pointer
+ * 
+ * Return value: none
+ */
 void countNumberOfTrees(map *mptr) {
     int treeCount = 0;
     for (int i = 0; i < getMapLines(mptr); i++) {
@@ -78,7 +110,21 @@ void countNumberOfTrees(map *mptr) {
     setTreesNumber(mptr, treeCount);
 }
 
-int markUncertainCels(map *mptr) {
+/**
+ * Function: markUncertainCells
+ * 
+ * Description: marks in map cells that might support tents i.e. ortogonal to tree and not in a zero row/collumn
+ * 
+ * Side-effects: writes uncertains in mptr
+ * 
+ * Arguments:
+ *     map *mptr - map pointer
+ * 
+ * Return value:
+ *     1 - if map might have solution
+ *     0 - if map is impossible
+ */
+int markUncertainCells(map *mptr) {
     int isolatedTree;
     char c;
     for (int i = 0; i < getMapLines(mptr); i++) {
@@ -104,6 +150,18 @@ int markUncertainCels(map *mptr) {
     return 1;
 }
 
+/**
+ * Function: buildUncertainAndTreeArray
+ * 
+ * Description: writes arrays with all uncertain cells and tree cells
+ * 
+ * Arguments:
+ *     map *mptr - map pointer
+ *     cell **uncertainArray - returns uncertain array
+ *     cell **treeArray - returns tree array
+ * 
+ * Return value: none
+ */
 void buildUncertainAndTreeArray(map *mptr, cell **uncertainArray, cell **treeArray) {
     int u = 0, t = 0;
 
@@ -127,6 +185,19 @@ void buildUncertainAndTreeArray(map *mptr, cell **uncertainArray, cell **treeArr
     }
 }
 
+/**
+ * Function: checkHintsConsistency
+ * 
+ * Description: checks that all tents in row/column requirements are possible
+ * 
+ * 
+ * Arguments:
+ *     map *mptr - map pointer
+ * 
+ * Return value:
+ *     1 - if map might have solution
+ *     0 - if map is impossible
+ */
 int checkHintsConsistency(map *mptr) {
     int uncertainCount;
 
@@ -149,6 +220,25 @@ int checkHintsConsistency(map *mptr) {
     return 1;
 }
 
+/**
+ * Function: backtrackingSolve
+ * 
+ * Description: recursively try to solve map using backtracking
+ * 
+ * Side-effects: writes solution to mptr
+ * 
+ * Arguments:
+ *     map *mptr - map pointer
+ *     cell *uncertainArray - array with cells that might support a tent
+ *     cell *treeArray - array with all trees
+ *     cell *links - array with linked tent coordinates for every tree (should be init to -1)
+ *     char *visited - array with boolean values for visited trees
+ *     int current - current position of uncertainArary that backtraking is working (should be called with 0)
+ * 
+ * Return value:
+ *     1 - if map is possible
+ *     0 - if map is impossible
+ */
 int backtrackingSolve(map *mptr, cell *uncertainArray, cell *treeArray, cell *links, char *visited, int current) {
     int line, column;
 
@@ -169,6 +259,22 @@ int backtrackingSolve(map *mptr, cell *uncertainArray, cell *treeArray, cell *li
     return 0;
 }
 
+/**
+ * Function: validTent
+ * 
+ * Description: checks if Tent is valid
+ * 
+ * Arguments:
+ *     map *mptr - map pointer
+ *     cell Cell - tent to be validated
+ *     cell *treeArray - array with all trees
+ *     cell *links - array with linked tent coordinates for every tree (should be init to -1)
+ *     char *visited - array with boolean values for visited trees
+ * 
+ * Return value:
+ *     1 - if tent is valid
+ *     0 - if tent is invalid
+ */
 int validTent(map *mptr, cell Cell, cell *treeArray, cell *links, char *visited) {
     int tentSum;
 
@@ -195,6 +301,19 @@ int validTent(map *mptr, cell Cell, cell *treeArray, cell *links, char *visited)
     return 1;
 }
 
+/**
+ * Function: validGrass
+ * 
+ * Description: checks if grass is valid
+ * 
+ * Arguments:
+ *     map *mptr - map pointer
+ *     cell Cell - tent to be validated
+ * 
+ * Return value:
+ *     1 - if tent is valid
+ *     0 - if tent is invalid
+ */
 int validGrass(map *mptr, cell Cell) {
     int tentSum, uncertainSum;
     char c;
@@ -239,6 +358,22 @@ int validGrass(map *mptr, cell Cell) {
     return 1;
 }
 
+/**
+ * Function: localInjectivity
+ * 
+ * Description: checks tent-tree injectivity i.e. theres a unique tree for a tent (locally)
+ * 
+ * Arguments:
+ *     map *mptr - map pointer
+ *     cell tent - tent to be validated
+ *     cell *treeArray - array with all trees
+ *     cell *links - array with linked tent coordinates for every tree (should be init to -1)
+ *     char *visited - array with boolean values for visited trees
+ * 
+ * Return value:
+ *     1 - if tent is valid
+ *     0 - if tent is invalid
+ */
 int localInjectivity(map *mptr, cell tent, cell *treeArray, cell *links, char *visited) {
     int adjacent;
     char c;
