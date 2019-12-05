@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "map.h"
 
 struct {
@@ -18,15 +19,19 @@ typedef struct {
 
 void countNumberOfTrees(map *mptr);
 int markUncertainCels(map *mptr);
-cell *buildUncertainArray(map *mptr);
+void buildUncertainAndTreeArray(map *mptr, cell **uncertainArray, cell **treeArray);
 int checkHintsConsistency(map *mptr);
-int backtrackingSolve(map *mptr, cell *workingArray, int current);
-int validTent(map *mptr, int line, int column);
-int validGrass(map *mptr, int line, int column);
+int backtrackingSolve(map *mptr, cell *uncertainArray, cell *treeArray, cell *links, char *visited, int current);
+int validTent(map *mptr, cell Cell, cell *treeArray, cell *links, char *visited);
+int validGrass(map *mptr, cell Cell);
+int localInjectivity(map *mptr, cell tent, cell *treeArray, cell *links, char *visited);
 
 int solveMap(map *mptr) {
     int possible;
     cell *uncertainArray = NULL;
+    cell *treeArray = NULL;
+    cell *links = NULL;
+    char *visited = NULL;
 
     countNumberOfTrees(mptr);
     if (getTreesNumber(mptr) < getTentsNumber(mptr)) return -1;
@@ -34,7 +39,7 @@ int solveMap(map *mptr) {
     possible = markUncertainCels(mptr);
     if (!possible) return -1;
 
-    uncertainArray = buildUncertainArray(mptr);
+    buildUncertainAndTreeArray(mptr, &uncertainArray, &treeArray);
 
     possible = checkHintsConsistency(mptr);
     if (!possible) {
@@ -42,8 +47,22 @@ int solveMap(map *mptr) {
         return -1;
     }
 
-    possible = backtrackingSolve(mptr, uncertainArray, 0);
+    links = (cell *) malloc(getTreesNumber(mptr) * sizeof(cell));
+    if (links == NULL) exit(EXIT_FAILURE);
+    for (int i = 0; i < getTreesNumber(mptr); i++) {
+        links[i].line = -1;
+        links[i].column = -1;
+    }
+
+    visited = (char *) malloc(getTreesNumber(mptr) * sizeof(char));
+    if (visited == NULL) exit(EXIT_FAILURE);
+
+    possible = backtrackingSolve(mptr, uncertainArray, treeArray, links, visited, 0);
+
     free(uncertainArray);
+    free(treeArray);
+    free(links);
+    free(visited);
     if (!possible) return -1;
 
     return 1;
@@ -85,24 +104,27 @@ int markUncertainCels(map *mptr) {
     return 1;
 }
 
-cell *buildUncertainArray(map *mptr) {
-    cell *array;
-    int c;
+void buildUncertainAndTreeArray(map *mptr, cell **uncertainArray, cell **treeArray) {
+    int u = 0, t = 0;
 
-    array = (cell *) malloc(getUncertainCount(mptr) * sizeof(cell));
-    if (array == NULL) exit(EXIT_FAILURE);
+    *uncertainArray = (cell *) malloc(getUncertainCount(mptr) * sizeof(cell));
+    if (*uncertainArray == NULL) exit(EXIT_FAILURE);
+    *treeArray = (cell *) malloc(getTreesNumber(mptr) * sizeof(cell));
+    if (*treeArray == NULL) exit(EXIT_FAILURE);
 
-    c = 0;
     for (int i = 0; i < getMapLines(mptr); i++) {
         for (int j = 0; j < getMapColumns(mptr); j++) {
             if (getContentOfPosition(mptr, i, j) == 'U') {
-                array[c].line = i;
-                array[c].column = j;
-                c++;
+                (*uncertainArray)[u].line = i;
+                (*uncertainArray)[u].column = j;
+                u++;
+            } else if (getContentOfPosition(mptr, i, j) == 'A') {
+                (*treeArray)[t].line = i;
+                (*treeArray)[t].column = j;
+                t++;
             }
         }
     }
-    return array;
 }
 
 int checkHintsConsistency(map *mptr) {
@@ -127,50 +149,53 @@ int checkHintsConsistency(map *mptr) {
     return 1;
 }
 
-int backtrackingSolve(map *mptr, cell *workingArray, int current) {
+int backtrackingSolve(map *mptr, cell *uncertainArray, cell *treeArray, cell *links, char *visited, int current) {
     int line, column;
 
     if (current == getUncertainCount(mptr)) return 1;
 
-    line = workingArray[current].line;
-    column = workingArray[current].column;
+    line = uncertainArray[current].line;
+    column = uncertainArray[current].column;
 
     setContentOfPosition(mptr, line, column, 'T');
-    if (validTent(mptr, line, column)) {
-        if (backtrackingSolve(mptr, workingArray, current + 1)) return 1;
+    if (validTent(mptr, uncertainArray[current], treeArray, links, visited)) {
+        if (backtrackingSolve(mptr, uncertainArray, treeArray, links, visited, current + 1)) return 1;
     }
     setContentOfPosition(mptr, line, column, '.');
-    if (validGrass(mptr, line, column)) {
-        if (backtrackingSolve(mptr, workingArray, current + 1)) return 1;
+    if (validGrass(mptr, uncertainArray[current])) {
+        if (backtrackingSolve(mptr, uncertainArray, treeArray, links, visited, current + 1)) return 1;
     }
     setContentOfPosition(mptr, line, column, 'U');
     return 0;
 }
 
-int validTent(map *mptr, int line, int column) {
+int validTent(map *mptr, cell Cell, cell *treeArray, cell *links, char *visited) {
     int tentSum;
 
     for (int i = 0; i < 8; i++) {
-        if (getContentOfPosition(mptr, line + adjacents[i].dx, column + adjacents[i].dy) == 'T')
+        if (getContentOfPosition(mptr, Cell.line + adjacents[i].dx, Cell.column + adjacents[i].dy) == 'T')
             return 0;
     }
 
     tentSum = 0;
     for (int i = 0; i < getMapColumns(mptr); i++) {
-        if (getContentOfPosition(mptr, line, i) == 'T') tentSum++;
+        if (getContentOfPosition(mptr, Cell.line, i) == 'T') tentSum++;
     }
-    if (tentSum > getTentsInLine(mptr, line)) return 0;
+    if (tentSum > getTentsInLine(mptr, Cell.line)) return 0;
 
     tentSum = 0;
     for (int i = 0; i < getMapLines(mptr); i++) {
-        if (getContentOfPosition(mptr, i, column) == 'T') tentSum++;
+        if (getContentOfPosition(mptr, i, Cell.column) == 'T') tentSum++;
     }
-    if (tentSum > getTentsInColumn(mptr, column)) return 0;
+    if (tentSum > getTentsInColumn(mptr, Cell.column)) return 0;
+
+    memset(visited, 0, getTreesNumber(mptr));
+    if (!localInjectivity(mptr, Cell, treeArray, links, visited)) return 0;
 
     return 1;
 }
 
-int validGrass(map *mptr, int line, int column) {
+int validGrass(map *mptr, cell Cell) {
     int tentSum, uncertainSum;
     char c;
     int isolated;
@@ -178,10 +203,10 @@ int validGrass(map *mptr, int line, int column) {
     /** When in high season check if theres an isolated tree */
     if (getTentsNumber(mptr) == getTreesNumber(mptr)) {
         for (int i = 0; i < 4; i++) {
-            if (getContentOfPosition(mptr, line + ortogonals[i].dx, column + ortogonals[i].dy) == 'A') {
+            if (getContentOfPosition(mptr, Cell.line + ortogonals[i].dx, Cell.column + ortogonals[i].dy) == 'A') {
                 isolated = 1;
                 for (int j = 0; j < 4; j++) {
-                    if ((c = getContentOfPosition(mptr, line + ortogonals[i].dx + ortogonals[j].dx, column + ortogonals[i].dy + ortogonals[j].dy)) == 'T' || c == 'U') {
+                    if ((c = getContentOfPosition(mptr, Cell.line + ortogonals[i].dx + ortogonals[j].dx, Cell.column + ortogonals[i].dy + ortogonals[j].dy)) == 'T' || c == 'U') {
                         isolated = 0;
                         break;
                     }
@@ -194,22 +219,45 @@ int validGrass(map *mptr, int line, int column) {
     tentSum = 0;
     uncertainSum = 0;
     for (int i = 0; i < getMapColumns(mptr); i++) {
-        if (getContentOfPosition(mptr, line, i) == 'T')
+        if (getContentOfPosition(mptr, Cell.line, i) == 'T')
             tentSum++;
-        else if (getContentOfPosition(mptr, line, i) == 'U')
+        else if (getContentOfPosition(mptr, Cell.line, i) == 'U')
             uncertainSum++;
     }
-    if (uncertainSum < getTentsInLine(mptr, line) - tentSum) return 0;
+    if (uncertainSum < getTentsInLine(mptr, Cell.line) - tentSum) return 0;
 
     tentSum = 0;
     uncertainSum = 0;
     for (int i = 0; i < getMapLines(mptr); i++) {
-        if (getContentOfPosition(mptr, i, column) == 'T')
+        if (getContentOfPosition(mptr, i, Cell.column) == 'T')
             tentSum++;
-        else if (getContentOfPosition(mptr, i, column) == 'U')
+        else if (getContentOfPosition(mptr, i, Cell.column) == 'U')
             uncertainSum++;
     }
-    if (uncertainSum < getTentsInColumn(mptr, column) - tentSum) return 0;
+    if (uncertainSum < getTentsInColumn(mptr, Cell.column) - tentSum) return 0;
 
     return 1;
+}
+
+int localInjectivity(map *mptr, cell tent, cell *treeArray, cell *links, char *visited) {
+    int adjacent;
+    char c;
+    for (int i = 0; i < getTreesNumber(mptr); i++) {
+        adjacent = 0;
+        for (int k = 0; k < 4; k++) {
+            if (treeArray[i].line + ortogonals[k].dx == tent.line && treeArray[i].column + ortogonals[k].dy == tent.column) adjacent = 1;
+        }
+        if (!adjacent) continue;
+        if (!visited[i]) {
+            visited[i] = 1;
+
+            if (links[i].line == tent.line && links[i].column == tent.column) return 1;
+
+            if (links[i].line == -1 || (c = getContentOfPosition(mptr, links[i].line, links[i].column)) == 'U' || c == '.' || localInjectivity(mptr, links[i], treeArray, links, visited)) {
+                links[i] = tent;
+                return 1;
+            }
+        }
+    }
+    return 0;
 }
