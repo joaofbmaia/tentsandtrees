@@ -14,7 +14,7 @@
 /**
  * Function: readAndSolveMap
  * 
- * Description: reads problem from file calls apropriate solving functions
+ * Description: reads problem from file calls appropriate solving functions
  * 
  * Arguments:
  *     FILE *fp - file pointer

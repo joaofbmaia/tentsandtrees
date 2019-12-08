@@ -16,7 +16,7 @@ struct {
 struct {
     int dx;
     int dy;
-} ortogonals[] = {{-1, 0}, {0, -1}, {0, 1}, {1, 0}};
+} orthogonals[] = {{-1, 0}, {0, -1}, {0, 1}, {1, 0}};
 
 typedef struct {
     int line;
@@ -113,7 +113,7 @@ void countNumberOfTrees(map *mptr) {
 /**
  * Function: markUncertainCells
  * 
- * Description: marks in map cells that might support tents i.e. ortogonal to tree and not in a zero row/collumn
+ * Description: marks in map cells that might support tents i.e. orthogonal to tree and not in a zero row/collumn
  * 
  * Side-effects: writes uncertains in mptr
  * 
@@ -132,11 +132,11 @@ int markUncertainCells(map *mptr) {
             if (getContentOfPosition(mptr, i, j) == 'A') {
                 isolatedTree = 1;
                 for (int k = 0; k < 4; k++) {
-                    if (i + ortogonals[k].dx < 0 || i + ortogonals[k].dx >= getMapLines(mptr)) continue;
-                    if (j + ortogonals[k].dy < 0 || j + ortogonals[k].dy >= getMapColumns(mptr)) continue;
-                    if (((c = getContentOfPosition(mptr, i + ortogonals[k].dx, j + ortogonals[k].dy)) != 'A') && getTentsInLine(mptr, i + ortogonals[k].dx) && getTentsInColumn(mptr, j + ortogonals[k].dy)) {
+                    if (i + orthogonals[k].dx < 0 || i + orthogonals[k].dx >= getMapLines(mptr)) continue;
+                    if (j + orthogonals[k].dy < 0 || j + orthogonals[k].dy >= getMapColumns(mptr)) continue;
+                    if (((c = getContentOfPosition(mptr, i + orthogonals[k].dx, j + orthogonals[k].dy)) != 'A') && getTentsInLine(mptr, i + orthogonals[k].dx) && getTentsInColumn(mptr, j + orthogonals[k].dy)) {
                         if (c != 'U') {
-                            setContentOfPosition(mptr, i + ortogonals[k].dx, j + ortogonals[k].dy, 'U');
+                            setContentOfPosition(mptr, i + orthogonals[k].dx, j + orthogonals[k].dy, 'U');
                             incrementUncertainCount(mptr);
                         }
                         isolatedTree = 0;
@@ -233,7 +233,7 @@ int checkHintsConsistency(map *mptr) {
  *     cell *treeArray - array with all trees
  *     cell *links - array with linked tent coordinates for every tree (should be init to -1)
  *     char *visited - array with boolean values for visited trees
- *     int current - current position of uncertainArary that backtraking is working (should be called with 0)
+ *     int current - current position of uncertainArray that backtracking is working (should be called with 0)
  * 
  * Return value:
  *     1 - if map is possible
@@ -322,10 +322,10 @@ int validGrass(map *mptr, cell Cell) {
     /** When in high season check if theres an isolated tree */
     if (getTentsNumber(mptr) == getTreesNumber(mptr)) {
         for (int i = 0; i < 4; i++) {
-            if (getContentOfPosition(mptr, Cell.line + ortogonals[i].dx, Cell.column + ortogonals[i].dy) == 'A') {
+            if (getContentOfPosition(mptr, Cell.line + orthogonals[i].dx, Cell.column + orthogonals[i].dy) == 'A') {
                 isolated = 1;
                 for (int j = 0; j < 4; j++) {
-                    if ((c = getContentOfPosition(mptr, Cell.line + ortogonals[i].dx + ortogonals[j].dx, Cell.column + ortogonals[i].dy + ortogonals[j].dy)) == 'T' || c == 'U') {
+                    if ((c = getContentOfPosition(mptr, Cell.line + orthogonals[i].dx + orthogonals[j].dx, Cell.column + orthogonals[i].dy + orthogonals[j].dy)) == 'T' || c == 'U') {
                         isolated = 0;
                         break;
                     }
@@ -380,7 +380,7 @@ int localInjectivity(map *mptr, cell tent, cell *treeArray, cell *links, char *v
     for (int i = 0; i < getTreesNumber(mptr); i++) {
         adjacent = 0;
         for (int k = 0; k < 4; k++) {
-            if (treeArray[i].line + ortogonals[k].dx == tent.line && treeArray[i].column + ortogonals[k].dy == tent.column) adjacent = 1;
+            if (treeArray[i].line + orthogonals[k].dx == tent.line && treeArray[i].column + orthogonals[k].dy == tent.column) adjacent = 1;
         }
         if (!adjacent) continue;
         if (!visited[i]) {
